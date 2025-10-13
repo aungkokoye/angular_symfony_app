@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <span class="text-primary">TY Hire</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        @let user = user$ | async;
+        @if (user?.email) {
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/dashboard']" routerLinkActive="active">
+                <i class="fa-solid fa-gauge"></i>
+                Dashboard
+              </a>
+            </li>
+          }
+      </ul>
+
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              @if (user?.email) {
+                {{ user?.email }}
+              } @else {
+                <i class="fa-solid fa-user"></i>
+              }
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              @if (user?.email) {
+                <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
+              } @else {
+                <li><a class="dropdown-item" href="/">Login</a></li>
+                <li><a class="dropdown-item" href="#">Register</a></li>
+              }
+            </ul>
+          </li>
+      </ul>
+
+    </div>
+  </div>
+</nav>

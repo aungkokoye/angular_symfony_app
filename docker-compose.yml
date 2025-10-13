@@ -1,0 +1,64 @@
+services:
+  php-apache:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: symfony_apache
+    volumes:
+      - ./symfony:/var/www/backend
+      - ./angular/dist/frontend/browser:/var/www/html
+      - ./angular:/var/www/frontend
+      - ./docker/apache/apache.conf:/etc/apache2/sites-available/000-default.conf
+      - ./docker/php/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+    ports:
+      - "8750:80"
+      - "9001:9001"
+
+  angular:
+    image: node:20
+    container_name: angular_frontend
+    working_dir: /var/www/frontend
+    command: bash -c "npm install && npm run build -- --watch"
+    volumes:
+      - ./angular:/var/www/frontend
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3400:3306
+    volumes:
+      - my-db:/var/lib/mysql
+
+  mailer:
+    image: schickling/mailcatcher
+    container_name: schickling_mailer
+    ports:
+      - 2025:1025
+      - 2080:1080
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"       # AMQP protocol port
+      - "15672:15672"     # HTTP management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rabbitmq_net
+
+volumes:
+    my-db:
+    rabbitmq_data:
+
+networks:
+  rabbitmq_net:
+    driver: bridge

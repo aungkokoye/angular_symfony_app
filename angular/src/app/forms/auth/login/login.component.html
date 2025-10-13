@@ -1,0 +1,64 @@
+<div class="background-container">
+  <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow bg-light-grey" style="width: 500px;">
+      <h3 class="text-center mb-3"> Please Login Here</h3>
+      <hr>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            aria-describedby="emailHelp"
+            placeholder="Enter email"
+            formControlName="email"
+          >
+          @if (!loginForm.get('email')?.valid && loginForm.get('email')?.touched) {
+            <div id="emailError" class="small form-text text-danger">
+              Please enter a valid email address.
+            </div>
+          }
+
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Password"
+            formControlName="password"
+          >
+          @if (!loginForm.get('password')?.valid && loginForm.get('password')?.touched) {
+            <div id="passwordError" class="small form-text text-danger">
+              Please enter a valid password (min 8 characters).
+            </div>
+          }
+        </div>
+        <br>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!loginForm.valid"
+        >
+          Submit
+        </button>
+      </form>
+
+      @if (authFailure) {
+        <hr>
+        <div id="authFailure" class="small form-text text-danger">
+          Invalid credentials.Login Fail.
+        </div>
+      }
+      @if (authError) {
+        <hr>
+        <div id="authError" class="small form-text text-danger">
+          {{ authError }}
+        </div>
+      }
+    </div>
+  </div>
+</div>

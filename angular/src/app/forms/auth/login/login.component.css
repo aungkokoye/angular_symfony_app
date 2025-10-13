@@ -1,0 +1,15 @@
+.background-container {
+  background-image: url('../../../../../public/screen-saver.jpg');
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100vh; /* or any desired size */
+}
+
+.bg-light-grey {
+  background-color: #f8f9fa;
+}
+
+input.ng-invalid.ng-touched {
+  border: 1px solid red !important;
+}

@@ -1,0 +1,21 @@
+.dropdown-menu {
+  position: fixed !important;   /* Detach from parent */
+  right: 10px;                   /* Align to right of screen */
+  top: 60px;                     /* Adjust for navbar height */
+  width: auto;                   /* Let Bootstrap decide width based on content */
+  min-width: 200px;              /* Optional: Control minimum size */
+  max-width: 300px;              /* Optional: Control maximum size */
+
+  max-height: 70vh;              /* Limit height to avoid taking the whole screen */
+  overflow-y: auto;              /* Scroll inside dropdown if too many items */
+
+  padding: 0.5rem;               /* Keep nice spacing */
+  z-index: 1050;                 /* Stay on top */
+  background-color: #fff;        /* Ensure background */
+  border-radius: 0.5rem;         /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);  /* Subtle shadow */
+}
+
+.active {
+  color: #ff6300 !important;
+}
