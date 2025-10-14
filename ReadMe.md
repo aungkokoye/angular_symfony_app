@@ -56,6 +56,8 @@ ___________________________________________________________
     cd /var/www/frontend  # Angular frontend
     
     ng build
+    
+    npm test --watch=false or ng test --watch=false # to run the test cases
 ````
 ---
 ##### API Documentation:

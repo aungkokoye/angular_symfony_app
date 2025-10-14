@@ -1,10 +1,14 @@
 FROM php:8.4-apache
 
-# Install dependencies including supervisor
+# Install dependencies including supervisor and Chrome for testing
 RUN apt-get update && apt-get install -y \
     vim libzip-dev libpng-dev libonig-dev zlib1g-dev \
     supervisor curl gnupg \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
+
+# Set Chrome binary for Karma tests
+ENV CHROME_BIN=/usr/bin/chromium
 
 # Install Xdebug
 RUN yes | pecl install xdebug \
@@ -17,8 +21,8 @@ RUN yes | pecl install xdebug \
 # Install PHP extensions
 RUN docker-php-ext-install mbstring zip gd pdo_mysql mysqli bcmath
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+# Install Node.js and npm (v22.x for Angular 20 compatibility)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
