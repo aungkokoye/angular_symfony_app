@@ -15,7 +15,7 @@ RUN yes | pecl install xdebug \
     && echo "xdebug.log=/tmp/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 # Install PHP extensions
-RUN docker-php-ext-install mbstring zip gd pdo_mysql mysqli
+RUN docker-php-ext-install mbstring zip gd pdo_mysql mysqli bcmath
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \

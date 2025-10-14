@@ -4,6 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    queue_host: '%env(QUEUE_HOST)%'
+    queue_port: '%env(QUEUE_PORT)%'
+    queue_user: '%env(QUEUE_USER)%'
+    queue_password: '%env(QUEUE_PASSWORD)%'
 
 services:
     # default configuration for services in *this* file
@@ -15,10 +19,23 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+#        exclude:
+#            - '../src/EventListeners/'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    # Event Listeners
+    App\EventListeners\BatchQueueEventListener:
+        tags:
+            - { name: kernel.event_listener, event: 'batch.user.notification', method: process }
+
+    App\Service\Queue\BatchQueueService:
+        arguments:
+            $host: '%queue_host%'
+            $port: '%queue_port%'
+            $user: '%queue_user%'
+            $password: '%queue_password%'
 
 imports:
     - { resource: services/security.yaml }

@@ -13,6 +13,9 @@ services:
     ports:
       - "8750:80"
       - "9001:9001"
+    networks:
+      - default
+      - rabbitmq_net
 
   angular:
     image: node:20
