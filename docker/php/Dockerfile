@@ -19,7 +19,7 @@ RUN yes | pecl install xdebug \
     && echo "xdebug.log=/tmp/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 # Install PHP extensions
-RUN docker-php-ext-install mbstring zip gd pdo_mysql mysqli bcmath
+RUN docker-php-ext-install mbstring zip gd pdo_mysql mysqli bcmath sockets
 
 # Install Node.js and npm (v22.x for Angular 20 compatibility)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
@@ -44,8 +44,18 @@ RUN a2enmod rewrite
 # Create Supervisor log directories
 RUN mkdir -p /var/log/supervisor
 
+# Copy supervisor configuration
+COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copy and set up entrypoint script
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Expose Apache
 EXPOSE 80
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Launch Supervisor (which starts Apache and your script)
 CMD ["/usr/bin/supervisord", "-n"]
