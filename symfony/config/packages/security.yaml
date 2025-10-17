@@ -13,20 +13,12 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            pattern: ^
+
+        api_web_security:
+            pattern: ^/(login|logout|me)
             lazy: true
             provider: app_user_provider
-            stateless: false  # Enable session management
-
-            # Session-based login (you are doing it manually via API controller)
-            form_login: false  # Disabled because you're handling login manually
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            stateless: false
 
             json_login:
                 check_path: app_login
@@ -38,6 +30,42 @@ security:
                 path: app_logout
                 invalidate_session: true
 
+        api_public:
+            pattern: ^/(jwt-login|jwt-refresh)
+            stateless: true
+            security: false
+
+        api:
+            pattern: ^/
+            stateless: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Service\Security\JwtAuthenticator
+#        main:
+#            pattern: ^
+#            lazy: true
+#            provider: app_user_provider
+#            stateless: false  # Enable session management
+#
+#            # Session-based login (you are doing it manually via API controller)
+#            form_login: false  # Disabled because you're handling login manually
+
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+#            json_login:
+#                check_path: app_login
+#                username_path: email
+#                password_path: password
+#                success_handler: App\Service\Security\LoginSuccessHandler
+#
+#            logout:
+#                path: app_logout
+#                invalidate_session: true
+
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     role_hierarchy:
@@ -46,6 +74,10 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/logout, roles: PUBLIC_ACCESS }
+        - { path: ^/me, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

@@ -19,7 +19,7 @@ The application will be available at http://localhost:8750, after running follow
 
     docker exec -it symfony_apache bash # to enter the Symfony container
     
-    composer install # to install the dependencies
+    composer install # skip vendor folder is exit (entrypoint.sh might install for supervisor)
 
     /var/www/backend/bin/console doctrine:database:create # to create the database
 

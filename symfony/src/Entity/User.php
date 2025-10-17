@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -58,6 +60,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?User $updatedBy = null;
+
+    /**
+     * @var Collection<int, JwtRefreshToken>
+     */
+    #[ORM\OneToMany(targetEntity: JwtRefreshToken::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $jwtRefreshes;
+
+    public function __construct()
+    {
+        $this->jwtRefreshes = new ArrayCollection();
+    }
 
 
     public function getId(): int
@@ -198,5 +211,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function onPreUpdate(): void
     {
         $this->updatedAt = new DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, JwtRefreshToken>
+     */
+    public function getJwtRefreshes(): Collection
+    {
+        return $this->jwtRefreshes;
+    }
+
+    public function addJwtRefresh(JwtRefreshToken $jwtRefresh): static
+    {
+        if (!$this->jwtRefreshes->contains($jwtRefresh)) {
+            $this->jwtRefreshes->add($jwtRefresh);
+            $jwtRefresh->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJwtRefresh(JwtRefreshToken $jwtRefresh): static
+    {
+        if ($this->jwtRefreshes->removeElement($jwtRefresh)) {
+            // set the owning side to null (unless already changed)
+            if ($jwtRefresh->getUser() === $this) {
+                $jwtRefresh->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

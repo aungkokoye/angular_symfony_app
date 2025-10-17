@@ -9,6 +9,9 @@ parameters:
     queue_user: '%env(QUEUE_USER)%'
     queue_password: '%env(QUEUE_PASSWORD)%'
 
+    app.jwt_secret_key: '%env(JWT_SECRET_KEY)%'
+    app.jwt_token_ttl: '%env(int:JWT_TOKEN_TTL)%'
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -30,6 +33,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: 'batch.user.notification', method: process }
 
+    # Services
     App\Service\Queue\BatchQueueService:
         arguments:
             $host: '%queue_host%'

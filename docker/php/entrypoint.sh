@@ -10,12 +10,12 @@ if [ ! -d "vendor" ]; then
     composer install --no-interaction --optimize-autoloader
 fi
 
-# Start supervisord in background
-/usr/bin/supervisord -n &
+# Start the command passed from Dockerfile CMD in background
+"$@" &
 SUPERVISOR_PID=$!
 
 # Wait for supervisor to start
-sleep 5
+sleep 10
 
 # Now start the workers after dependencies are installed
 supervisorctl start symfony_worker

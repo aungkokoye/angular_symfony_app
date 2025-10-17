@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -49,6 +50,10 @@ final class SecurityController extends AbstractController
     {
         /** @var User $user */
         $user = $security->getUser();
+
+        if (!$user instanceof User) {
+            throw new NotFoundHttpException('User not found');
+        }
 
         if (empty($user->getId())) {
             return $this->json([]);
