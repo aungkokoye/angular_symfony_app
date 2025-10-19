@@ -15,7 +15,7 @@ security:
             security: false
 
         api_web_security:
-            pattern: ^/(login|logout|me)
+            pattern: ^/(login|logout|me|test)
             lazy: true
             provider: app_user_provider
             stateless: false
@@ -77,6 +77,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/me, roles: PUBLIC_ACCESS }
+        - { path: ^/test, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }
 
 when@test:

@@ -2,7 +2,12 @@
 
 namespace App\Controller;
 
+use App\Domain\Enrollment\Entity\SubjectStudent;
+use App\Domain\Student\Entity\Student;
+use App\Domain\Subject\Entity\Subject;
+use App\Domain\Teacher\Entity\Teacher;
 use App\EventListeners\BatchQueueEvent;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -17,11 +22,33 @@ final class TestController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/test', name: 'app_test')]
-    public function index(): Response
+    public function index(EntityManagerInterface $em): Response
     {
+        $student = new Student();
+        $student->setName('Test Student')->setRevoked(false);
+        $em->persist($student);
+
+        $teacher = new Teacher();
+        $teacher->setName('Test Teacher')->setSalary(100000);
+        $em->persist($teacher);
+
+        $subject = new Subject();
+        $subject->setName('Test Subject')->setTeacher($teacher);
+        $em->persist($subject);
+
+        $enrollment = new SubjectStudent();
+        $enrollment->setStudent($student)
+            ->setSubject($subject)
+            ->setExpectedGrade(1)
+            ->setGrade(1)
+        ;
+        $em->persist($enrollment);
+        $em->flush();
+
         return $this->json([
             'message' => 'Test endpoint is working!',
             'status' => 'success',
+            'student'=> $student->getName(),
         ]);
     }
 
