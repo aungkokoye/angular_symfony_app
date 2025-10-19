@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Student\MessageHandler;
+namespace App\Application\Student\Handler;
 
 use App\Domain\Student\Message\StudentMessage;
 use App\Repository\UserRepository;

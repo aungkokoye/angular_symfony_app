@@ -13,7 +13,8 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
+        # browser acc don't need auth, can access auth session
+        # api access need JWT auth
         api_web_security:
             pattern: ^/(login|logout|me|test)
             lazy: true
@@ -29,12 +30,12 @@ security:
             logout:
                 path: app_logout
                 invalidate_session: true
-
+        # api stateless, public access, no auth needed
         api_public:
-            pattern: ^/(jwt-login|jwt-refresh)
+            pattern: ^/(jwt-login|jwt-refresh|test)
             stateless: true
             security: false
-
+        # api stateless, no session JWT needed
         api:
             pattern: ^/
             stateless: true
@@ -77,7 +78,9 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/me, roles: PUBLIC_ACCESS }
+        # browser public access for testing purposes /api/test/*
         - { path: ^/test, roles: PUBLIC_ACCESS }
+        # browser access needs to be authenticated
         - { path: ^/, roles: ROLE_USER }
 
 when@test:

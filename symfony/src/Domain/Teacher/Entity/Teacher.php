@@ -7,6 +7,8 @@ use App\Infrastructure\Doctrine\Repository\TeacherRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: TeacherRepository::class)]
 class Teacher
@@ -17,9 +19,15 @@ class Teacher
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Teacher name is required')]
+    #[Assert\Type(type: 'string', message: 'Teacher name must be a string')]
+    #[Assert\Length(max: 100, maxMessage: 'Teacher name cannot be longer than {{ limit }} characters')]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Salary is required')]
+    #[Assert\Type(type: 'integer', message: 'Salary must be a number')]
+    #[Assert\Positive(message: 'Salary must be a positive number')]
     private ?int $salary = null;
 
     /**
@@ -43,7 +51,7 @@ class Teacher
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -55,7 +63,7 @@ class Teacher
         return $this->salary;
     }
 
-    public function setSalary(int $salary): static
+    public function setSalary(?int $salary): static
     {
         $this->salary = $salary;
 

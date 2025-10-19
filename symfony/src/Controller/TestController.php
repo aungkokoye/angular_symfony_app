@@ -2,21 +2,22 @@
 
 namespace App\Controller;
 
-use App\Domain\Enrollment\Entity\SubjectStudent;
+use App\Application\Teacher\Handler\TeacherManager;
 use App\Domain\Student\Entity\Student;
 use App\Domain\Student\Message\StudentMessage;
-use App\Domain\Subject\Entity\Subject;
 use App\Domain\Teacher\Entity\Teacher;
 use App\EventListeners\BatchQueueEvent;
 use App\Infrastructure\MessagePublisher\StudentMessagePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class TestController extends AbstractController
@@ -24,8 +25,8 @@ final class TestController extends AbstractController
     /**
      * @throws ExceptionInterface
      */
-    #[Route('/test', name: 'app_test')]
-    public function test(EntityManagerInterface $em, StudentMessagePublisher $publisher): Response
+    #[Route('/test/messenger', name: 'app_test_messenger')]
+    public function messenger(EntityManagerInterface $em, StudentMessagePublisher $publisher): Response
     {
         $reflection = new \ReflectionClass(Student::class);
         $shortName = strtolower($reflection->getShortName());
@@ -71,5 +72,34 @@ final class TestController extends AbstractController
             'message' => 'Test Symfony batch notification is working!',
             'status' => 'success',
         ]);
+    }
+
+    /**
+     * Create a new teacher using Symfony's MapRequestPayload for automatic JSON deserialization and validation.
+     *
+     * The #[MapRequestPayload] attribute automatically:
+     * 1. Deserializes JSON request body into TeacherDto
+     * 2. Validates the DTO using validation constraints
+     * 3. Returns 400 Bad Request with validation errors if validation fails
+     * 4. Returns 422 Unprocessable Entity if deserialization fails
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    #[Route('/test/teacher', name: 'app_test_teacher', methods: ['POST'])]
+    public function testTeacher(
+        Request $request,
+        EntityManagerInterface $em,
+        SerializerInterface $serializer,
+        TeacherManager $teacherManager,
+    ): Response
+    {
+        $content = $request->getContent();
+        $dto = $serializer->deserialize($content, Teacher::class, 'json');
+        [$violationsErrors, $teacher] = $teacherManager->createTeacher($dto);
+
+        if (!empty($violationsErrors)) {
+            return $this->json($violationsErrors, Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json( $teacher, Response::HTTP_OK);
     }
 }
