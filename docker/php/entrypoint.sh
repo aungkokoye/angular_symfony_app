@@ -20,6 +20,7 @@ sleep 10
 # Now start the workers after dependencies are installed
 supervisorctl start symfony_worker
 supervisorctl start rabbitmq_cosume_worker
+supervisorctl start messenger_consumer_worker
 
 # Wait for supervisor process
 wait $SUPERVISOR_PID

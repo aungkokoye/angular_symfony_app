@@ -4,14 +4,17 @@ namespace App\Controller;
 
 use App\Domain\Enrollment\Entity\SubjectStudent;
 use App\Domain\Student\Entity\Student;
+use App\Domain\Student\Message\StudentMessage;
 use App\Domain\Subject\Entity\Subject;
 use App\Domain\Teacher\Entity\Teacher;
 use App\EventListeners\BatchQueueEvent;
+use App\Infrastructure\MessagePublisher\StudentMessagePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -19,36 +22,19 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 final class TestController extends AbstractController
 {
     /**
-     * @throws TransportExceptionInterface
+     * @throws ExceptionInterface
      */
     #[Route('/test', name: 'app_test')]
-    public function index(EntityManagerInterface $em): Response
+    public function test(EntityManagerInterface $em, StudentMessagePublisher $publisher): Response
     {
-        $student = new Student();
-        $student->setName('Test Student')->setRevoked(false);
-        $em->persist($student);
-
-        $teacher = new Teacher();
-        $teacher->setName('Test Teacher')->setSalary(100000);
-        $em->persist($teacher);
-
-        $subject = new Subject();
-        $subject->setName('Test Subject')->setTeacher($teacher);
-        $em->persist($subject);
-
-        $enrollment = new SubjectStudent();
-        $enrollment->setStudent($student)
-            ->setSubject($subject)
-            ->setExpectedGrade(1)
-            ->setGrade(1)
-        ;
-        $em->persist($enrollment);
-        $em->flush();
+        $reflection = new \ReflectionClass(Student::class);
+        $shortName = strtolower($reflection->getShortName());
+        $message = new StudentMessage($shortName, 'welcome',5);
+        $publisher->publishNotification($shortName, 'welcome', $message);
 
         return $this->json([
             'message' => 'Test endpoint is working!',
             'status' => 'success',
-            'student'=> $student->getName(),
         ]);
     }
 

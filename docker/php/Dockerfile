@@ -1,22 +1,28 @@
 FROM php:8.4-apache
 
-# Install dependencies including supervisor and Chrome for testing
+# Install system dependencies including supervisor, Chrome for testing, and RabbitMQ client libraries
 RUN apt-get update && apt-get install -y \
     vim libzip-dev libpng-dev libonig-dev zlib1g-dev \
     supervisor curl gnupg \
     chromium \
-    && rm -rf /var/lib/apt/lists/*
+    librabbitmq-dev libssh-dev
 
 # Set Chrome binary for Karma tests
 ENV CHROME_BIN=/usr/bin/chromium
 
-# Install Xdebug
+# Install Xdebug extension
 RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.log=/tmp/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+# Install AMQP extension for RabbitMQ support
+RUN printf "\n" | pecl install amqp && docker-php-ext-enable amqp
+
+# Clean up apt cache to reduce image size
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install mbstring zip gd pdo_mysql mysqli bcmath sockets
