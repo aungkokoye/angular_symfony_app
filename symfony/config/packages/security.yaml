@@ -13,7 +13,7 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        # browser acc don't need auth, can access auth session
+        # browser access don't need auth, can access auth session
         # api access need JWT auth
         api_web_security:
             pattern: ^/(login|logout|me|test)

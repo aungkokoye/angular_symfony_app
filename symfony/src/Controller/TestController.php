@@ -75,13 +75,6 @@ final class TestController extends AbstractController
     }
 
     /**
-     * Create a new teacher using Symfony's MapRequestPayload for automatic JSON deserialization and validation.
-     *
-     * The #[MapRequestPayload] attribute automatically:
-     * 1. Deserializes JSON request body into TeacherDto
-     * 2. Validates the DTO using validation constraints
-     * 3. Returns 400 Bad Request with validation errors if validation fails
-     * 4. Returns 422 Unprocessable Entity if deserialization fails
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     #[Route('/test/teacher', name: 'app_test_teacher', methods: ['POST'])]
