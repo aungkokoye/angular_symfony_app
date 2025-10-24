@@ -38,8 +38,8 @@ class DoctrineMappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         // Result: When 'app.my_custom_service' is created, Symfony automatically calls setLogger($loggerInstance)
-        // $definition = $container->getDefinition('app.my_custom_service');
-        // $definition->addMethodCall('setLogger', [new Reference('logger')]);
+//         $definition = $container->getDefinition('app.my_custom_service');
+//         $definition->addMethodCall('setLogger', [new Reference('logger')]);
 
         $projectDir = $container->getParameter('kernel.project_dir');
         $finder     = new Finder();
