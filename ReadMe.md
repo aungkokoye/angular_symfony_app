@@ -1,9 +1,3 @@
-### H5 Hire Technology Test
-
-This is a test for the H5 Hire Technology position. 
-The goal is to create a simple web application that allows users to search for project.
-Application is built using Angular 20 and Symfony 7.3 with PHP 8.4.
----
 ##### How to set up the application
 
 After cloning the repository, you can set up the application using Docker.
